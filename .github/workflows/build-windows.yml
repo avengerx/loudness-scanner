@@ -1,0 +1,39 @@
+# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
+# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
+name: CMake on multiple platforms
+
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        install: >
+          cmake
+          git
+          mingw64/mingw-w64-x86_64-libsndfile
+          mingw64/mingw-w64-x86_64-cmake
+          mingw64/mingw-w64-x86_64-mpg123
+          mingw64/mingw-w64-x86_64-ffmpeg
+          mingw64/mingw-w64-x86_64-gcc
+          mingw64/mingw-w64-x86_64-taglib
+          mingw-w64-x86_64-toolchain
+          base-devel
+
+    # it may be needed due to msys2 in Windows platform
+    #- run: git config --global core.autocrlf input
+    - uses: actions/checkout@v4
+    
+    - name: Configure and build
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: >
+        mkdir build
+        cd build
+        cmake ..
+        make
